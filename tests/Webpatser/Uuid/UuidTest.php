@@ -181,4 +181,42 @@ class UuidTest extends TestCase
         $this->assertTrue(Uuid::compare($uuid1, $uuid1));
         $this->assertFalse(Uuid::compare($uuid1, $uuid2));
     }
+
+    public function testMintNameExceptionNameAsStringRequired()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('A name-string is required for Version 3 or 5 UUIDs.');
+        Uuid::generate(5, '', '');
+    }
+
+    public function testMintNameExceptionBinaryNamespaceRequired()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('A binary namespace is required for Version 3 or 5 UUIDs.');
+        Uuid::generate(3, 'asdsa', '');
+    }
+
+    public function testExceptionVersionTwoUnsupported()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Version 2 is unsupported.');
+        Uuid::generate(2);
+    }
+
+    public function testExceptionSelectedVersionIsUnsupported()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Selected version is invalid or unsupported.');
+        Uuid::generate(6);
+    }
+
+    public function testGetStrings()
+    {
+        $uuid = Uuid::generate(1);
+        $this->assertEquals($uuid,  $uuid->__get('string'));
+        $this->assertEquals($uuid->uuid_ordered,  $uuid->__get('uuid_ordered'));
+        $this->assertEquals($uuid->hex,  $uuid->__get('hex'));
+        $this->assertEquals($uuid->bytes,  $uuid->__get('bytes'));
+        $this->assertNull($uuid->__get(''));
+    }
 }
